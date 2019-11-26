@@ -3,6 +3,7 @@ library(dplyr)
 library(RSQLite)
 library(DT)
 library(shinyjs)
+library(CARTMod)
 
 
 # Database related functions ----------------------------------------------

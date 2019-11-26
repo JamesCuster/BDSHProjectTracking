@@ -38,6 +38,8 @@ tabPanel(
     "Add"
   ),
   
+  addModuleUI("employee"),
+  
   actionButton(
     "editEmployee",
     "Edit"
