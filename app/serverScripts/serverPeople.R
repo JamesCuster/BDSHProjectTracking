@@ -340,6 +340,13 @@ observeEvent(
 
 
 # 2.4 Add Employee --------------------------------------------------------
+callModule(addModule, "employee",
+           modalTitle = "Add BDSH Employee",
+           inputData = employeeInputs,
+           db = BDSHProjects,
+           dbTable = "employees",
+           reactiveData = reactiveData)
+
 observeEvent(
   input$addEmployee, {
     fields <- 
