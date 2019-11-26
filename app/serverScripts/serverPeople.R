@@ -347,36 +347,6 @@ callModule(addModule, "employee",
            dbTable = "employees",
            reactiveData = reactiveData)
 
-observeEvent(
-  input$addEmployee, {
-    fields <- 
-      modalInputs(
-        employeeInputs$ids, 
-        employeeInputs$labels, 
-        employeeInputs$type
-      )
-    
-    showModal(
-      modalDialog(
-        title = "Add BDSH Employee",
-        fields,
-        footer = 
-          div(
-            modalButton("Cancel"),
-            actionButton("insertEmployee", "Save")
-          )
-      )
-    )
-  }
-)
-
-observeEvent(
-  input$insertEmployee, {
-    insertCallback(employeeInputs$ids, "employees")
-    removeModal()
-  }
-)
-
 
 
 # 2.5 Edit Employee -------------------------------------------------------

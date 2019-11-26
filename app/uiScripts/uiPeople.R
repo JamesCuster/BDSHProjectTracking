@@ -33,11 +33,6 @@ tabPanel(
   tags$h1("BDSH Staff"),
   
   # Buttons to modify the Researchers table
-  actionButton(
-    "addEmployee",
-    "Add"
-  ),
-  
   addModuleUI("employee"),
   
   actionButton(
