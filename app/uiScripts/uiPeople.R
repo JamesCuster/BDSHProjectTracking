@@ -6,11 +6,13 @@ tabPanel(
   tags$h1("Researchers"),
   
   # Buttons to modify the Researchers table
-  actionButton(
-    "addResearcher",
-    "Add"
-  ),
+  addModuleUI("researcher"),
   
+  # actionButton(
+  #   "addResearcher",
+  #   "Add"
+  # ),
+  # 
   actionButton(
     "editResearcher",
     "Edit"
