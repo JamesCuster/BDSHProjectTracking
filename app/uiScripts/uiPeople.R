@@ -8,11 +8,6 @@ tabPanel(
   # Buttons to modify the Researchers table
   addModuleUI("researcher"),
   
-  # actionButton(
-  #   "addResearcher",
-  #   "Add"
-  # ),
-  # 
   actionButton(
     "editResearcher",
     "Edit"
