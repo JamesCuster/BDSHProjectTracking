@@ -197,13 +197,26 @@ choicesProjects <- reactive({
 # 2.2 Manipulate Project Data ---------------------------------------------
 
 # 2.2.1 Add Project -------------------------------------------------------
+projectsAdditionalInputs <- 
+  list(
+    radioButtons(
+      inputId =  "fiscalYear19", 
+      label = "Was The Project Initiated in FY 2019?", 
+      choices = c("Yes", "No"),
+      selected = "No",
+      inline = TRUE
+    ),
+    tags$hr()
+  )
+
 callModule(addModule, "project",
            modalTitle = "Add Project",
            inputData = projectInputs,
            db = BDSHProjects,
            dbTable = "projects",
            reactiveData = reactiveData,
-           staticChoices = projectStatic)
+           staticChoices = projectStatic,
+           additionalInputs = projectsAdditionalInputs)
 
 
 observeEvent(
@@ -246,7 +259,7 @@ observeEvent(
 observeEvent(input$fiscalYear19, {
   if (input$fiscalYear19 == "Yes") {
     session$sendCustomMessage(
-      "projectID", 
+      "project-projectID", 
       max(
         reactiveData$projects[reactiveData$projects$projectID < 20000, "projectID"]
       ) + 1)

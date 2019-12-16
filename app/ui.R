@@ -3,8 +3,8 @@ shinyUI(
   fluidPage(
     
     tags$script("
-        Shiny.addCustomMessageHandler('projectID', function(id) {
-          Shiny.setInputValue('projectID', id);
+        Shiny.addCustomMessageHandler('project-projectID', function(id) {
+          Shiny.setInputValue('project-projectID', id);
         });
       "),
     
