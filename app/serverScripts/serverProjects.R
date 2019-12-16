@@ -70,48 +70,96 @@ output$projects <- renderDataTable(
 
 # this data.frame stores information about what inputs are used for projects
 projectInputs <-
-  data.frame(
-    ids = c("projectID",
-            "projectName",
-            "bdshLead",
-            "bdshSecondary",
-            "projectPI",
-            "projectSupport1",
-            "projectSupport2",
-            "projectSupport3",
-            "projectSupport4",
-            "projectDescription",
-            "projectStatus",
-            "projectDueDate",
-            "educationProject"),
-    labels = c("projectID",
-               "Project Name",
-               "BDSH Lead",
-               "BDSH Secondary",
-               "Primary Investigator",
-               "Support Staff 1",
-               "Support Staff 2",
-               "Support Staff 3",
-               "Support Staff 4",
-               "Brief Description",
-               "Status",
-               "Due Date",
-               "Is this a resident, fellow, or student project?"),
-    type = c("skip",
-             "textInput",
-             "selectizeInput",
-             "selectizeInput",
-             "selectizeInput",
-             "selectizeInput",
-             "selectizeInput",
-             "selectizeInput",
-             "selectizeInput",
-             "textAreaInput",
-             "selectInput",
-             "dateInput",
-             "selectInput"),
+  rbind.data.frame(
+    projectID = c("projectID", "projectID", "skip",
+                  NA, NA, NA),
+    projectName = c("projectName", "Project Name", "textInput",
+                    NA, NA, NA),
+    bdshLead = c("bdshLead", "BDSH Lead", "selectizeInput",
+                 "employees", "bdshID", "employeeName"),
+    bdshSecondary = c("bdshSecondary", "BDSH Secondary", "selectizeInput",
+                      "employees", "bdshID", "employeeName"),
+    projectPI = c("projectPI", "Primary Investigator", "selectizeInput",
+                  "researchers", "researcherID", "researcherName"),
+    projectSupport1 = c("projectSupport1", "Support Staff 1", "selectizeInput",
+                        "researchers", "researcherID", "researcherName"),
+    projectSupport2 = c("projectSupport2", "Support Staff 2", "selectizeInput",
+                        "researchers", "researcherID", "researcherName"),
+    projectSupport3 = c("projectSupport3", "Support Staff 3", "selectizeInput",
+                        "researchers", "researcherID", "researcherName"),
+    projectSupport4 = c("projectSupport4", "Support Staff 4", "selectizeInput",
+                        "researchers", "researcherID", "researcherName"),
+    projectDescription = c("projectDescription", "Brief Description", "textAreaInput",
+                           NA, NA, NA),
+    projectStatus = c("projectStatus", "Status", "selectInput",
+                      "static", NA, NA),
+    projectDueDate = c("projectDueDate", "Due Date", "dateInput",
+                       NA, NA, NA),
+    educationProject = c("educationProject", "Is this a resident, fellow, or student project?",
+                         "selectInput", "static", NA, NA),
     stringsAsFactors = FALSE
+  ) %>% setNames(c("ids", "labels", "type",
+                   "choicesTable", "choicesValues", "choicesLabels"))
+
+projectStatic <- 
+  list(
+    projectStatus = 
+      list("Active",
+           Closed = 
+             paste0("Closed - ",
+                    c("Grant Declined", "Funding Declined",
+                      "Analysis Completed", "Loss to Follow-up")),
+           Dormant = 
+             paste0("Dormant - ",
+                    c("Grant Submitted", "Manuscript Submitted",
+                      "Analysis Completed", "Loss to Follow-up"))),
+    
+  educationProject = c("No", "Resident or Fellow", "Student")
   )
+
+# projectInputs <-
+#   data.frame(
+#     ids = c("projectID",
+#             "projectName",
+#             "bdshLead",
+#             "bdshSecondary",
+#             "projectPI",
+#             "projectSupport1",
+#             "projectSupport2",
+#             "projectSupport3",
+#             "projectSupport4",
+#             "projectDescription",
+#             "projectStatus",
+#             "projectDueDate",
+#             "educationProject"),
+#     labels = c("projectID",
+#                "Project Name",
+#                "BDSH Lead",
+#                "BDSH Secondary",
+#                "Primary Investigator",
+#                "Support Staff 1",
+#                "Support Staff 2",
+#                "Support Staff 3",
+#                "Support Staff 4",
+#                "Brief Description",
+#                "Status",
+#                "Due Date",
+#                "Is this a resident, fellow, or student project?"),
+#     type = c("skip",
+#              "textInput",
+#              "selectizeInput",
+#              "selectizeInput",
+#              "selectizeInput",
+#              "selectizeInput",
+#              "selectizeInput",
+#              "selectizeInput",
+#              "selectizeInput",
+#              "textAreaInput",
+#              "selectInput",
+#              "dateInput",
+#              "selectInput"),
+#     stringsAsFactors = FALSE
+#   )
 
 
 # This reactive creates the object which stores the choices for the selection
@@ -149,6 +197,15 @@ choicesProjects <- reactive({
 # 2.2 Manipulate Project Data ---------------------------------------------
 
 # 2.2.1 Add Project -------------------------------------------------------
+callModule(addModule, "project",
+           modalTitle = "Add Project",
+           inputData = projectInputs,
+           db = BDSHProjects,
+           dbTable = "projects",
+           reactiveData = reactiveData,
+           staticChoices = projectStatic)
+
+
 observeEvent(
   input$addProject, {
     choices <- choicesProjects()

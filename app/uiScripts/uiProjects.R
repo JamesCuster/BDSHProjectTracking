@@ -5,6 +5,8 @@ tabPanel(
   tags$h1("Projects"),
   
   # Buttons to modify the Researchers table
+  addModuleUI("project"),
+  
   actionButton(
     "addProject",
     "Add"
