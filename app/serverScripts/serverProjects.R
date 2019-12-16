@@ -117,72 +117,11 @@ projectStatic <-
   educationProject = c("No", "Resident or Fellow", "Student")
   )
 
-# projectInputs <-
-#   data.frame(
-#     ids = c("projectID",
-#             "projectName",
-#             "bdshLead",
-#             "bdshSecondary",
-#             "projectPI",
-#             "projectSupport1",
-#             "projectSupport2",
-#             "projectSupport3",
-#             "projectSupport4",
-#             "projectDescription",
-#             "projectStatus",
-#             "projectDueDate",
-#             "educationProject"),
-#     labels = c("projectID",
-#                "Project Name",
-#                "BDSH Lead",
-#                "BDSH Secondary",
-#                "Primary Investigator",
-#                "Support Staff 1",
-#                "Support Staff 2",
-#                "Support Staff 3",
-#                "Support Staff 4",
-#                "Brief Description",
-#                "Status",
-#                "Due Date",
-#                "Is this a resident, fellow, or student project?"),
-#     type = c("skip",
-#              "textInput",
-#              "selectizeInput",
-#              "selectizeInput",
-#              "selectizeInput",
-#              "selectizeInput",
-#              "selectizeInput",
-#              "selectizeInput",
-#              "selectizeInput",
-#              "textAreaInput",
-#              "selectInput",
-#              "dateInput",
-#              "selectInput"),
-#     stringsAsFactors = FALSE
-#   )
-
 
 # This reactive creates the object which stores the choices for the selection
 # inputs
 choicesProjects <- reactive({
   x <- list()
-  
-  # Project inputs
-  x[["bdshLead"]] <- valueLabel(reactiveData$employees, "bdshID", "employeeName")
-  x[["bdshSecondary"]] <- valueLabel(reactiveData$employees, "bdshID", "employeeName")
-  x[["projectPI"]] <- valueLabel(reactiveData$researchers, "researcherID", "researcherName")
-  x[["projectSupport1"]] <- valueLabel(reactiveData$researchers, "researcherID", "researcherName")
-  x[["projectSupport2"]] <- valueLabel(reactiveData$researchers, "researcherID", "researcherName")
-  x[["projectSupport3"]] <- valueLabel(reactiveData$researchers, "researcherID", "researcherName")
-  x[["projectSupport4"]] <- valueLabel(reactiveData$researchers, "researcherID", "researcherName")
-  x[["projectStatus"]] <- list("Active", 
-                               Closed = paste0("Closed - ", 
-                                               c("Grant Declined", "Funding Declined", 
-                                                 "Analysis Completed", "Loss to Follow-up")), 
-                               Dormant = paste0("Dormant - ", 
-                                                c("Grant Submitted", "Manuscript Submitted", 
-                                                  "Analysis Completed", "Loss to Follow-up")))
-  x[["educationProject"]] <- c("No", "Resident or Fellow", "Student")
   
   # Project Filter Input choices (Inputs Created in Section 1)
   x[["viewProjectsByStatus"]] <- c(All = "All", x[["projectStatus"]])
@@ -197,6 +136,10 @@ choicesProjects <- reactive({
 # 2.2 Manipulate Project Data ---------------------------------------------
 
 # 2.2.1 Add Project -------------------------------------------------------
+# ******************************************************************************
+# code to implement changing projectID if project was initiated in FY2019
+  # projectsAdditionalInputs passed as the additionalInputs parameter to
+  # addModule for projects
 projectsAdditionalInputs <- 
   list(
     radioButtons(
@@ -209,53 +152,8 @@ projectsAdditionalInputs <-
     tags$hr()
   )
 
-callModule(addModule, "project",
-           modalTitle = "Add Project",
-           inputData = projectInputs,
-           db = BDSHProjects,
-           dbTable = "projects",
-           reactiveData = reactiveData,
-           staticChoices = projectStatic,
-           additionalInputs = projectsAdditionalInputs)
-
-
-observeEvent(
-  input$addProject, {
-    choices <- choicesProjects()
-    fields <- 
-      modalInputs(
-        projectInputs$ids, 
-        projectInputs$labels, 
-        projectInputs$type,
-        choices = choices
-      )
-    
-    showModal(
-      modalDialog(
-        title = "Add Project",
-        # *************************************************************************************************
-        radioButtons(
-          inputId =  "fiscalYear19", 
-          label = "Was The Project Initiated in FY 2019?", 
-          choices = c("Yes", "No"),
-          selected = "No",
-          inline = TRUE
-        ),
-        tags$hr(),
-        # *************************************************************************************************
-        fields,
-        
-        footer = 
-          div(
-            modalButton("Cancel"),
-            actionButton("insertProject", "Save")
-          )
-      )
-    )
-  })
-
-
-# *************************************************************************************************
+# Observe which handles the input change for fiscalYear19 to Yes. The
+# Shiny.addCustomMessageHandler lives in ui.R
 observeEvent(input$fiscalYear19, {
   if (input$fiscalYear19 == "Yes") {
     session$sendCustomMessage(
@@ -268,14 +166,19 @@ observeEvent(input$fiscalYear19, {
     return()
   }
 })
-# *************************************************************************************************
+# ******************************************************************************
 
-observeEvent(
-  input$insertProject, {
-    insertCallback(projectInputs$ids, "projects")
-    removeModal()
-  }
-)
+
+callModule(addModule, "project",
+           modalTitle = "Add Project",
+           inputData = projectInputs,
+           db = BDSHProjects,
+           dbTable = "projects",
+           reactiveData = reactiveData,
+           staticChoices = projectStatic,
+           # *******************************************************************
+           additionalInputs = projectsAdditionalInputs)
+
 
 
 # 2.2.2 Edit Project ------------------------------------------------------

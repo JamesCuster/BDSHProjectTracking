@@ -8,11 +8,6 @@ tabPanel(
   addModuleUI("project"),
   
   actionButton(
-    "addProject",
-    "Add"
-  ),
-  
-  actionButton(
     "editProject",
     "Edit"
   ),
